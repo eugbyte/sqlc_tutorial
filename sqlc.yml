@@ -1,0 +1,26 @@
+﻿version: "2"
+sql:
+  - engine: "postgresql"
+    queries:
+      - "internal/api/author/repository/author_query.sql"
+    schema:
+      - "internal/db/migration/author_schema.sql"
+    gen:
+      go:
+        package: "codegen"
+        out: "internal/api/author/repository/codegen"
+        sql_package: "pgx/v5"
+        emit_interface: true
+
+  - engine: "postgresql"
+    queries:
+      - "internal/api/book/repository/book_query.sql"
+    schema:
+      - "internal/db/migration/author_schema.sql"
+      - "internal/db/migration/book_schema.sql"
+    gen:
+      go:
+        package: "codegen"
+        out: "internal/api/book/repository/codegen"
+        sql_package: "pgx/v5"
+        emit_interface: true
