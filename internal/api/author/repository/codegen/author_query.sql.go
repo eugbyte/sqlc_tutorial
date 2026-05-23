@@ -17,7 +17,7 @@ INSERT INTO authors (
 ) VALUES (
   $1, $2
 )
-RETURNING id, name, bio
+RETURNING id, publisher_id, name, bio
 `
 
 type CreateAuthorParams struct {
@@ -28,7 +28,12 @@ type CreateAuthorParams struct {
 func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) (Author, error) {
 	row := q.db.QueryRow(ctx, createAuthor, arg.Name, arg.Bio)
 	var i Author
-	err := row.Scan(&i.ID, &i.Name, &i.Bio)
+	err := row.Scan(
+		&i.ID,
+		&i.PublisherID,
+		&i.Name,
+		&i.Bio,
+	)
 	return i, err
 }
 
@@ -43,32 +48,60 @@ func (q *Queries) DeleteAuthor(ctx context.Context, id int64) error {
 }
 
 const getAuthor = `-- name: GetAuthor :one
-SELECT id, name, bio FROM authors
-WHERE id = $1 LIMIT 1
+SELECT authors.id, authors.publisher_id, authors.name, authors.bio, publishers.id, publishers.name
+FROM authors
+JOIN publishers ON authors.publisher_id = publishers.id
+WHERE authors.id = $1 LIMIT 1
 `
 
-func (q *Queries) GetAuthor(ctx context.Context, id int64) (Author, error) {
+type GetAuthorRow struct {
+	Author    Author
+	Publisher Publisher
+}
+
+func (q *Queries) GetAuthor(ctx context.Context, id int64) (GetAuthorRow, error) {
 	row := q.db.QueryRow(ctx, getAuthor, id)
-	var i Author
-	err := row.Scan(&i.ID, &i.Name, &i.Bio)
+	var i GetAuthorRow
+	err := row.Scan(
+		&i.Author.ID,
+		&i.Author.PublisherID,
+		&i.Author.Name,
+		&i.Author.Bio,
+		&i.Publisher.ID,
+		&i.Publisher.Name,
+	)
 	return i, err
 }
 
 const listAuthors = `-- name: ListAuthors :many
-SELECT id, name, bio FROM authors
-ORDER BY name
+SELECT authors.id, authors.publisher_id, authors.name, authors.bio, publishers.id, publishers.name
+FROM authors
+JOIN publishers ON authors.publisher_id = publishers.id
+ORDER BY authors.name
 `
 
-func (q *Queries) ListAuthors(ctx context.Context) ([]Author, error) {
+type ListAuthorsRow struct {
+	Author    Author
+	Publisher Publisher
+}
+
+func (q *Queries) ListAuthors(ctx context.Context) ([]ListAuthorsRow, error) {
 	rows, err := q.db.Query(ctx, listAuthors)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Author
+	var items []ListAuthorsRow
 	for rows.Next() {
-		var i Author
-		if err := rows.Scan(&i.ID, &i.Name, &i.Bio); err != nil {
+		var i ListAuthorsRow
+		if err := rows.Scan(
+			&i.Author.ID,
+			&i.Author.PublisherID,
+			&i.Author.Name,
+			&i.Author.Bio,
+			&i.Publisher.ID,
+			&i.Publisher.Name,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -84,7 +117,7 @@ UPDATE authors
   set name = $2,
   bio = $3
 WHERE id = $1
-RETURNING id, name, bio
+RETURNING id, publisher_id, name, bio
 `
 
 type UpdateAuthorParams struct {
@@ -96,6 +129,11 @@ type UpdateAuthorParams struct {
 func (q *Queries) UpdateAuthor(ctx context.Context, arg UpdateAuthorParams) (Author, error) {
 	row := q.db.QueryRow(ctx, updateAuthor, arg.ID, arg.Name, arg.Bio)
 	var i Author
-	err := row.Scan(&i.ID, &i.Name, &i.Bio)
+	err := row.Scan(
+		&i.ID,
+		&i.PublisherID,
+		&i.Name,
+		&i.Bio,
+	)
 	return i, err
 }

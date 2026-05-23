@@ -6,7 +6,9 @@ type AuthorRequest struct {
 }
 
 type AuthorResponse struct {
-	ID   int64   `json:"id"`
-	Name string  `json:"name"`
-	Bio  *string `json:"bio"`
+	ID          int64              `json:"id"`
+	Name        string             `json:"name"`
+	Bio         *string            `json:"bio"`
+	PublisherId int64              `json:"publisherId"`
+	Publisher   *PublisherResponse `json:"publisher"`
 }

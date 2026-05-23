@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	authorHandler "github.com/eugbyte/sqlc_tutorial/internal/api/author/handler"
+	ah "github.com/eugbyte/sqlc_tutorial/internal/api/author/handler"
 	authrepo "github.com/eugbyte/sqlc_tutorial/internal/api/author/repository/codegen"
 	"github.com/eugbyte/sqlc_tutorial/internal/api/author/service"
 	serverlib "github.com/eugbyte/sqlc_tutorial/internal/httpserver"
@@ -22,7 +22,7 @@ func main() {
 	const username = "postgres"
 	const password = "postgres"
 	const host = "localhost"
-	const dbName = "eventmap"
+	const dbName = "sqlc_tutorial"
 	conn, err := pgx.Connect(ctx, fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=disable", username, password, host, 5432, dbName))
 	if err != nil {
 		log.Fatalf("pgx.Connect(): %v", err)
@@ -31,15 +31,17 @@ func main() {
 
 	authorRepo := authrepo.New(conn)
 	authorService := service.NewAuthorService(authorRepo)
-	authorHTTPHandler := authorHandler.NewAuthorHandler(authorService)
+	authorHandler := ah.NewAuthorHandler(authorService)
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
+
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		data := map[string]string{"message": "Hello, World!"}
 		render.JSON(w, r, data)
 	})
-	serverlib.RegisterRoutes(router, authorHTTPHandler)
+	serverlib.RegisterRoutes(router, authorHandler)
+
 	if err := http.ListenAndServe(":8080", router); err != nil {
 		fmt.Printf("Failed to start server: %v\n", err)
 	}

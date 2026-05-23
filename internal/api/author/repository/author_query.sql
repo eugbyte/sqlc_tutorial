@@ -1,10 +1,14 @@
 -- name: GetAuthor :one
-SELECT * FROM authors
-WHERE id = $1 LIMIT 1;
+SELECT sqlc.embed(authors), sqlc.embed(publishers)
+FROM authors
+JOIN publishers ON authors.publisher_id = publishers.id
+WHERE authors.id = $1 LIMIT 1;
 
 -- name: ListAuthors :many
-SELECT * FROM authors
-ORDER BY name;
+SELECT sqlc.embed(authors), sqlc.embed(publishers)
+FROM authors
+JOIN publishers ON authors.publisher_id = publishers.id
+ORDER BY authors.name;
 
 -- name: CreateAuthor :one
 INSERT INTO authors (

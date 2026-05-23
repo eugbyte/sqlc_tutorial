@@ -11,8 +11,8 @@ import (
 type Querier interface {
 	CreateAuthor(ctx context.Context, arg CreateAuthorParams) (Author, error)
 	DeleteAuthor(ctx context.Context, id int64) error
-	GetAuthor(ctx context.Context, id int64) (Author, error)
-	ListAuthors(ctx context.Context) ([]Author, error)
+	GetAuthor(ctx context.Context, id int64) (GetAuthorRow, error)
+	ListAuthors(ctx context.Context) ([]ListAuthorsRow, error)
 	UpdateAuthor(ctx context.Context, arg UpdateAuthorParams) (Author, error)
 }
 

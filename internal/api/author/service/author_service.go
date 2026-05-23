@@ -34,9 +34,14 @@ func (s *AuthorService) GetAuthor(ctx context.Context, id int64) (model.AuthorRe
 	}
 
 	return model.AuthorResponse{
-		ID:   author.ID,
-		Name: author.Name,
-		Bio:  lib.FromPgText(author.Bio),
+		ID:          author.Author.ID,
+		Name:        author.Author.Name,
+		Bio:         lib.FromPgText(author.Author.Bio),
+		PublisherId: author.Author.PublisherID,
+		Publisher: &model.PublisherResponse{
+			ID:   author.Publisher.ID,
+			Name: author.Publisher.Name,
+		},
 	}, nil
 }
 
@@ -49,9 +54,14 @@ func (s *AuthorService) ListAuthors(ctx context.Context) ([]model.AuthorResponse
 	result := make([]model.AuthorResponse, 0, len(authors))
 	for _, author := range authors {
 		result = append(result, model.AuthorResponse{
-			ID:   author.ID,
-			Name: author.Name,
-			Bio:  lib.FromPgText(author.Bio),
+			ID:          author.Author.ID,
+			Name:        author.Author.Name,
+			Bio:         lib.FromPgText(author.Author.Bio),
+			PublisherId: author.Author.PublisherID,
+			Publisher: &model.PublisherResponse{
+				ID:   author.Publisher.ID,
+				Name: author.Publisher.Name,
+			},
 		})
 	}
 
@@ -68,9 +78,10 @@ func (s *AuthorService) UpdateAuthor(ctx context.Context, authorId int64, arg mo
 		return model.AuthorResponse{}, err
 	}
 	return model.AuthorResponse{
-		ID:   result.ID,
-		Name: result.Name,
-		Bio:  lib.FromPgText(result.Bio),
+		ID:          result.ID,
+		Name:        result.Name,
+		PublisherId: result.PublisherID,
+		Bio:         lib.FromPgText(result.Bio),
 	}, nil
 }
 
