@@ -12,7 +12,7 @@ import (
 )
 
 const createAuthor = `-- name: CreateAuthor :one
-INSERT INTO authors (
+INSERT INTO author (
   name, bio
 ) VALUES (
   $1, $2
@@ -38,7 +38,7 @@ func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) (Aut
 }
 
 const deleteAuthor = `-- name: DeleteAuthor :exec
-DELETE FROM authors
+DELETE FROM author
 WHERE id = $1
 `
 
@@ -48,10 +48,10 @@ func (q *Queries) DeleteAuthor(ctx context.Context, id int64) error {
 }
 
 const getAuthor = `-- name: GetAuthor :one
-SELECT authors.id, authors.publisher_id, authors.name, authors.bio, publishers.id, publishers.name
-FROM authors
-JOIN publishers ON authors.publisher_id = publishers.id
-WHERE authors.id = $1 LIMIT 1
+SELECT author.id, author.publisher_id, author.name, author.bio, publisher.id, publisher.name
+FROM author
+JOIN publisher ON author.publisher_id = publisher.id
+WHERE author.id = $1 LIMIT 1
 `
 
 type GetAuthorRow struct {
@@ -74,10 +74,10 @@ func (q *Queries) GetAuthor(ctx context.Context, id int64) (GetAuthorRow, error)
 }
 
 const listAuthors = `-- name: ListAuthors :many
-SELECT authors.id, authors.publisher_id, authors.name, authors.bio, publishers.id, publishers.name
-FROM authors
-JOIN publishers ON authors.publisher_id = publishers.id
-ORDER BY authors.name
+SELECT author.id, author.publisher_id, author.name, author.bio, publisher.id, publisher.name
+FROM author
+JOIN publisher ON author.publisher_id = publisher.id
+ORDER BY author.name
 `
 
 type ListAuthorsRow struct {
@@ -113,7 +113,7 @@ func (q *Queries) ListAuthors(ctx context.Context) ([]ListAuthorsRow, error) {
 }
 
 const updateAuthor = `-- name: UpdateAuthor :one
-UPDATE authors
+UPDATE author
   set name = $2,
   bio = $3
 WHERE id = $1

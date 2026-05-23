@@ -1,11 +1,10 @@
-package httpserver
+package handler
 
 import (
-	ah "github.com/eugbyte/sqlc_tutorial/internal/api/author/handler"
 	"github.com/go-chi/chi/v5"
 )
 
-func RegisterRoutes(r chi.Router, h *ah.AuthorHandler) {
+func RegisterRoutes(r chi.Router, h *AuthorHandler) {
 	r.Route("/authors", func(r chi.Router) {
 		r.Post("/", h.CreateAuthor)
 		r.Get("/", h.ListAuthors)

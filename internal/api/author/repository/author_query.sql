@@ -1,17 +1,17 @@
 -- name: GetAuthor :one
-SELECT sqlc.embed(authors), sqlc.embed(publishers)
-FROM authors
-JOIN publishers ON authors.publisher_id = publishers.id
-WHERE authors.id = $1 LIMIT 1;
+SELECT sqlc.embed(author), sqlc.embed(publisher)
+FROM author
+JOIN publisher ON author.publisher_id = publisher.id
+WHERE author.id = $1 LIMIT 1;
 
 -- name: ListAuthors :many
-SELECT sqlc.embed(authors), sqlc.embed(publishers)
-FROM authors
-JOIN publishers ON authors.publisher_id = publishers.id
-ORDER BY authors.name;
+SELECT sqlc.embed(author), sqlc.embed(publisher)
+FROM author
+JOIN publisher ON author.publisher_id = publisher.id
+ORDER BY author.name;
 
 -- name: CreateAuthor :one
-INSERT INTO authors (
+INSERT INTO author (
   name, bio
 ) VALUES (
   $1, $2
@@ -19,12 +19,12 @@ INSERT INTO authors (
 RETURNING *;
 
 -- name: UpdateAuthor :one
-UPDATE authors
+UPDATE author
   set name = $2,
   bio = $3
 WHERE id = $1
 RETURNING *;
 
 -- name: DeleteAuthor :exec
-DELETE FROM authors
+DELETE FROM author
 WHERE id = $1;

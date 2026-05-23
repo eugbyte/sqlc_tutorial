@@ -4,8 +4,7 @@ sql:
     queries:
       - "internal/api/author/repository/author_query.sql"
     schema:
-      - "internal/db/migration/author_schema.sql"
-      - "internal/db/migration/publisher_schema.sql"
+      - "internal/db/migration/"
     gen:
       go:
         package: "codegen"

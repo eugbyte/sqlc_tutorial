@@ -9,7 +9,6 @@ import (
 	ah "github.com/eugbyte/sqlc_tutorial/internal/api/author/handler"
 	authrepo "github.com/eugbyte/sqlc_tutorial/internal/api/author/repository/codegen"
 	"github.com/eugbyte/sqlc_tutorial/internal/api/author/service"
-	serverlib "github.com/eugbyte/sqlc_tutorial/internal/httpserver"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -40,8 +39,9 @@ func main() {
 		data := map[string]string{"message": "Hello, World!"}
 		render.JSON(w, r, data)
 	})
-	serverlib.RegisterRoutes(router, authorHandler)
+	ah.RegisterRoutes(router, authorHandler)
 
+	log.Println("server starting at port 8080")
 	if err := http.ListenAndServe(":8080", router); err != nil {
 		fmt.Printf("Failed to start server: %v\n", err)
 	}
